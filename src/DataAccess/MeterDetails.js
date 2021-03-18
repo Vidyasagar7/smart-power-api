@@ -1,22 +1,7 @@
-const AWS = require("aws-sdk");
-AWS.config.update({
-  region: "ap-south-1",
-  endpoint: "https://dynamodb.ap-south-1.amazonaws.com",
-});
-
-const docClient = new AWS.DynamoDB.DocumentClient();
+const { getItem } = require("../Dynamodb/DynamoDbClient");
 
 const getMeterDataById = async (meterId) => {
-  let params = {
-    TableName: "MeterReading",
-    Key: {
-      "primaryKeyId": meterId,
-      "sortKey": "METER",
-    },
-  };
-  const result = await docClient.get(params).promise();
-  console.log(`Result:::${JSON.stringify(result)}`);
-  return result.Item;
+  return getItem(meterId, "METER");
 };
 
 module.exports = { getMeterDataById };

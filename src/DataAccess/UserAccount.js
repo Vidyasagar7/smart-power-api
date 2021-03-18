@@ -1,42 +1,24 @@
-const AWS = require("aws-sdk");
+const {
+  SmartPowerTable,
+  getItem,
+  deleteItem,
+  queryBySecondaryIndex,
+  insertItem,
+} = require("../Dynamodb/DynamoDbClient");
 
-
-AWS.config.update({
-  region: "ap-south-1",
-  endpoint: "https://dynamodb.ap-south-1.amazonaws.com",
-});
-
-const docClient = new AWS.DynamoDB.DocumentClient();
-
+const USER_ENTITY = "USER";
 
 const getUserAccountByUserId = async (userId) => {
-  let params = {
-    TableName: "MeterReading",
-    Key: {
-      primaryKeyId: userId,
-      sortKey: "USER",
-    },
-  };
-  const result = await docClient.get(params).promise();
-  console.log(`Result::${JSON.stringify(result)}`);
-  return result.Item;
-
-}
+  return getItem(userId, USER_ENTITY);
+};
 
 const getUserAccountByMeterId = async (meterId) => {
-  let params = {
-    TableName: "MeterReading",
-    IndexName: "gsi_1",
-    KeyConditionExpression:
-      "sortKey = :sortKeyVal and regionKey = :regionKeyVal",
-    ExpressionAttributeValues: {
-      ":sortKeyVal": "USER",
-      ":regionKeyVal": meterId,
-    },
+  const keyCondition = `${SmartPowerTable.sortyKey} = :sortKeyVal and ${SmartPowerTable.gsiRegionKey} = :regionKeyVal`;
+  const expressionAttributes = {
+    ":sortKeyVal": USER_ENTITY,
+    ":regionKeyVal": meterId,
   };
-  const result = await docClient.query(params).promise();
-  console.log(`Result::${JSON.stringify(result)}`);
-  return result.Items;
+  return queryBySecondaryIndex(keyCondition, expressionAttributes);
 };
 
 const linkUserAccount = async (userAccountId, meterId) => {
@@ -44,32 +26,14 @@ const linkUserAccount = async (userAccountId, meterId) => {
     userAccountId: userAccountId,
     meterId: meterId,
   };
-  let params = {
-    TableName: "MeterReading",
-    Item: {
-      primaryKeyId: userAccountId,
-      sortKey: "USER",
-      regionKey: meterId,
-      ...userAccountDetails,
-    },
-  };
-  const result = await docClient.put(params).promise();
-  console.log(result);
-  return result.Item;
+
+  return insertItem(userAccountId, USER_ENTITY, meterId, userAccountDetails);
 };
+
+
 const deleteUserAccountByUserId = async (userId) => {
-  let params = {
-    TableName: "MeterReading",
-    Key: {
-      primaryKeyId: userId,
-      sortKey: "USER",
-    },
-  };
-  const result = await docClient.delete(params).promise();
-  return result.Item;
+  return deleteItem(userId, USER_ENTITY);
 };
-
-
 
 module.exports = {
   getUserAccountByUserId,
