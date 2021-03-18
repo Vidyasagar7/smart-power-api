@@ -1,4 +1,5 @@
 const express = require("express");
+const { getMeterDataById } = require("../DataAccess/MeterDetails");
 const {
   getUserAccountByMeterId,
   deleteUserAccountByUserId,
@@ -8,12 +9,16 @@ const {
 const userAccountRoute = express.Router();
 
 userAccountRoute.post("/user/linkaccount", async (req, res) => {
-
+  
   // Check input params
   if (!req.body.meterId || !req.body.userId) {
     res.status(400).send({"error": "meterId and userId should be provided"})
   }
-
+  const meterData = await getMeterDataById(req.body.meterId);
+  console.log(`meter Data::${meterData}`);
+  if(!meterData){
+    res.status(400).send({"error": `Provided meterId:${req.body.meterId} is Invaild`})
+  }
 
   const userAccount = await getUserAccountByMeterId(req.body.meterId);
   console.log(`Account Details::${userAccount}`);
