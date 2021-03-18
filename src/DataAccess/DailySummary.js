@@ -22,19 +22,20 @@ const getDailySummaryByMeterId = async (meterId, dateEpochMilli) => {
   return result.Item;
 };
 
-const monthlyAggregation = async(meterId,fromDate,toDate) =>{
+const getDailySummaries = async (meterId, fromDate, toDate) => {
   let params = {
     TableName: "MeterReading",
-    KeyConditionExpression: "primaryKeyId = :primaryKeyVal and sortKey between :Date1 and :Date2",
-    ExpressionAttributeValues :{
-    ":primaryKeyVal" :`DREAD_${meterId}`,
-    ":Date1" :fromDate,
-    ":Date2" :toDate
+    KeyConditionExpression:
+      "primaryKeyId = :primaryKeyVal and sortKey between :Date1 and :Date2",
+    ExpressionAttributeValues: {
+      ":primaryKeyVal": `DREAD_${meterId}`,
+      ":Date1": fromDate,
+      ":Date2": toDate,
     },
-   // ProjectionExpression : "date, readings",
-  }
+    // ProjectionExpression : "date, readings",
+  };
   const result = await docClient.query(params).promise();
   return result.Items;
 };
 
-module.exports = { getDailySummaryByMeterId,monthlyAggregation };
+module.exports = { getDailySummaryByMeterId, getDailySummaries };
