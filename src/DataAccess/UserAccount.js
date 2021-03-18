@@ -1,4 +1,6 @@
 const AWS = require("aws-sdk");
+
+
 AWS.config.update({
   region: "ap-south-1",
   endpoint: "https://dynamodb.ap-south-1.amazonaws.com",
@@ -6,7 +8,22 @@ AWS.config.update({
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const getAccountByMeterId = async (meterId) => {
+
+const getUserAccountByUserId = async (userId) => {
+  let params = {
+    TableName: "MeterReading",
+    Key: {
+      primaryKeyId: userId,
+      sortKey: "USER",
+    },
+  };
+  const result = await docClient.get(params).promise();
+  console.log(`Result::${JSON.stringify(result)}`);
+  return result.Item;
+
+}
+
+const getUserAccountByMeterId = async (meterId) => {
   let params = {
     TableName: "MeterReading",
     IndexName: "gsi_1",
@@ -22,7 +39,7 @@ const getAccountByMeterId = async (meterId) => {
   return result.Items;
 };
 
-const linkMeterId = async (userAccountId, meterId) => {
+const linkUserAccount = async (userAccountId, meterId) => {
   const userAccountDetails = {
     userAccountId: userAccountId,
     meterId: meterId,
@@ -40,7 +57,7 @@ const linkMeterId = async (userAccountId, meterId) => {
   console.log(result);
   return result.Item;
 };
-const deleteUserById = async (userId) => {
+const deleteUserAccountByUserId = async (userId) => {
   let params = {
     TableName: "MeterReading",
     Key: {
@@ -51,4 +68,12 @@ const deleteUserById = async (userId) => {
   const result = await docClient.delete(params).promise();
   return result.Item;
 };
-module.exports = { getAccountByMeterId, linkMeterId, deleteUserById };
+
+
+
+module.exports = {
+  getUserAccountByUserId,
+  getUserAccountByMeterId,
+  linkUserAccount,
+  deleteUserAccountByUserId,
+};
