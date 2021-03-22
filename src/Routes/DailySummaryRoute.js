@@ -16,7 +16,7 @@ dailySummaryRoute.get(`/meter/:meterId/dailySummary/:dateEpochMilli`, async (req
 dailySummaryRoute.get("/meter/:meterId/summaries", async (req, res) => {
 
   if (!req.query.fromDate || ! req.query.toDate) {
-    res.status(400).send({"error": "fromDate and toDate must be provided"})
+    return res.status(400).send({"error": "fromDate and toDate must be provided"})
   }
   const monthlyGrouping = await getDailySummaries(
     req.params.meterId,

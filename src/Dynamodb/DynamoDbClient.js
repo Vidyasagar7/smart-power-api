@@ -1,8 +1,9 @@
 const AWS = require("aws-sdk");
+const { ApiConfig } = require("../config/api-config");
 
 AWS.config.update({
   region: "ap-south-1",
-  endpoint: "https://dynamodb.ap-south-1.amazonaws.com",
+  endpoint: ApiConfig.dynamoDbEndpoint,
 });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
