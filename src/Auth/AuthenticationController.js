@@ -3,12 +3,15 @@ const jwt = require("jsonwebtoken");
 var jwksClient = require("jwks-rsa");
 
 const NodeCache = require("node-cache");
+const { ApiConfig } = require("../config/api-config");
 const jwksCache = new NodeCache();
 
 const JWS_KEY = "deafultJwsKey";
 const client = jwksClient({
-  jwksUri: "https://dev-upup1sol.eu.auth0.com/.well-known/jwks.json",
+  jwksUri: ApiConfig.jwksUrl,
 });
+
+console.log(`Api Config ::: ${JSON.stringify(ApiConfig)}`);
 
 const getKey = (header, callback) => {
     
