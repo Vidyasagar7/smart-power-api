@@ -33,7 +33,7 @@ const insertItem = async (primaryKeyVal, sortKeyVal, regionKeyVal, data) => {
       return result.Item;
 }
 
-const getItem = async (primaryKeyVal, sortKeyVal, projectionExpression) => {
+const getItem = async (primaryKeyVal, sortKeyVal, projectionExpression,expressionAttributeNames) => {
   let params = {
     TableName: SmartPowerTable.tableName,
     Key: {
@@ -41,6 +41,9 @@ const getItem = async (primaryKeyVal, sortKeyVal, projectionExpression) => {
       sortKey: sortKeyVal,
     },
     ...(projectionExpression && { ProjectionExpression: projectionExpression }),
+    ...(expressionAttributeNames && {
+      ExpressionAttributeNames: expressionAttributeNames,
+    }),
   };
   const result = await docClient.get(params).promise();
   return result.Item;
