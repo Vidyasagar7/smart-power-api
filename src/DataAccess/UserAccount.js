@@ -9,7 +9,8 @@ const {
 const USER_ENTITY = "USER";
 
 const getUserAccountByUserId = async (userId) => {
-  return getItem(userId, USER_ENTITY);
+  const projectionExpression = "userAccountId, meterId";
+  return getItem(userId, USER_ENTITY, projectionExpression);
 };
 
 const getUserAccountByMeterId = async (meterId) => {
@@ -18,7 +19,25 @@ const getUserAccountByMeterId = async (meterId) => {
     ":sortKeyVal": USER_ENTITY,
     ":regionKeyVal": meterId,
   };
-  return queryBySecondaryIndex(keyCondition, expressionAttributes);
+  const projectionExpression = "userAccountId, meterId";
+  return queryBySecondaryIndex(
+    keyCondition,
+    expressionAttributes,
+    projectionExpression
+  );
+};
+
+const getAllUsers = async () => {
+  const keyCondition = `${SmartPowerTable.sortyKey} = :sortKeyVal`;
+  const expressionAttributes = {
+    ":sortKeyVal": USER_ENTITY,
+  };
+  const projectionExpression = "userAccountId, meterId";
+  return queryBySecondaryIndex(
+    keyCondition,
+    expressionAttributes,
+    projectionExpression
+  );
 };
 
 const linkUserAccount = async (userAccountId, meterId) => {
@@ -30,7 +49,6 @@ const linkUserAccount = async (userAccountId, meterId) => {
   return insertItem(userAccountId, USER_ENTITY, meterId, userAccountDetails);
 };
 
-
 const deleteUserAccountByUserId = async (userId) => {
   return deleteItem(userId, USER_ENTITY);
 };
@@ -38,6 +56,7 @@ const deleteUserAccountByUserId = async (userId) => {
 module.exports = {
   getUserAccountByUserId,
   getUserAccountByMeterId,
+  getAllUsers,
   linkUserAccount,
   deleteUserAccountByUserId,
 };

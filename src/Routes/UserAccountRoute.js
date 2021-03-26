@@ -3,6 +3,7 @@ const { getMeterDataById } = require("../DataAccess/MeterDetails");
 const {
   getUserAccountByMeterId,
   deleteUserAccountByUserId,
+  getAllUsers,
   linkUserAccount,
   getUserAccountByUserId,
 } = require("../DataAccess/UserAccount");
@@ -17,7 +18,7 @@ userAccountRoute.post("/user/linkaccount", async (req, res) => {
   const meterData = await getMeterDataById(req.body.meterId);
   console.log(`meter Data::${meterData}`);
   if(!meterData){
-    return res.status(400).send({"error": `Provided meterId:${req.body.meterId} is Invaild`})
+    return res.status(400).send({"error": `Provided MeterId: ${req.body.meterId} is invaild`})
   }
 
   const userAccount = await getUserAccountByMeterId(req.body.meterId);
@@ -38,6 +39,11 @@ userAccountRoute.get("/user/:userId", async (req, res) => {
 const userDetails = await getUserAccountByUserId(req.params.userId);
 res.send(userDetails);
 });
+
+userAccountRoute.get("/users", async (req, res) => {
+  const users = await getAllUsers();
+  res.send(users)
+})
 
 userAccountRoute.get("/user/meter/:meterId", async (req, res) => {
   const getMeterId = await getUserAccountByMeterId(req.params.meterId);

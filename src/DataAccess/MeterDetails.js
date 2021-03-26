@@ -1,7 +1,12 @@
 const { getItem } = require("../Dynamodb/DynamoDbClient");
 
 const getMeterDataById = async (meterId) => {
-  return getItem(meterId, "METER");
+  const projectionExpression = "areacode,taluk,pincode,meterId,houseNumber,geoLoc,street,#meterState";
+  const expressionAttributeNames = {
+    "#meterState": "state"
+  }
+
+  return getItem(meterId, "METER", projectionExpression, expressionAttributeNames);
 };
 
 module.exports = { getMeterDataById };
