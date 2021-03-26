@@ -10,21 +10,26 @@ const {
 const userAccountRoute = express.Router();
 
 userAccountRoute.post("/user/linkaccount", async (req, res) => {
-  
   // Check input params
   if (!req.body.meterId || !req.body.userId) {
-    return res.status(400).send({"error": "meterId and userId should be provided"})
+    return res
+      .status(400)
+      .send({ error: "meterId and userId should be provided" });
   }
   const meterData = await getMeterDataById(req.body.meterId);
   console.log(`meter Data::${meterData}`);
-  if(!meterData){
-    return res.status(400).send({"error": `Provided MeterId: ${req.body.meterId} is invaild`})
+  if (!meterData) {
+    return res
+      .status(400)
+      .send({ error: `Provided MeterId:${req.body.meterId} is invaild` });
   }
 
   const userAccount = await getUserAccountByMeterId(req.body.meterId);
   console.log(`Account Details::${userAccount}`);
   if (userAccount && userAccount.length > 0) {
-    return res.status(400).send(`${req.body.meterId} is already linked to another user`);
+    return res
+      .status(400)
+      .send({ error: `${req.body.meterId} is already linked to another user` });
   } else {
     const linkAccount = await linkUserAccount(
       req.body.userId,
@@ -35,9 +40,8 @@ userAccountRoute.post("/user/linkaccount", async (req, res) => {
 });
 
 userAccountRoute.get("/user/:userId", async (req, res) => {
-
-const userDetails = await getUserAccountByUserId(req.params.userId);
-res.send(userDetails);
+  const userDetails = await getUserAccountByUserId(req.params.userId);
+  res.send(userDetails);
 });
 
 userAccountRoute.get("/users", async (req, res) => {
